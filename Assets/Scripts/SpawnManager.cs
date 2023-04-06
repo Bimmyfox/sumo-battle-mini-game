@@ -4,16 +4,12 @@ using UnityEngine;
 
 public class SpawnManager : MonoBehaviour
 {
-    public GameObject enemyPrefab;
+    [SerializeField] private GameObject enemyPrefab;
     private float spawnRange = 7f;
 
     void Start()
     {  
         Instantiate(enemyPrefab, GenerateSpawnPosition(), enemyPrefab.transform.rotation);
-    }
-
-    void Update()
-    {
     }
     
     private Vector3 GenerateSpawnPosition()

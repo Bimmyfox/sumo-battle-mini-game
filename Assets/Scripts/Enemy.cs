@@ -5,7 +5,7 @@ using UnityEngine;
 public class Enemy : MonoBehaviour
 {
 
-    public float speed = 1.5f;
+    [SerializeField] private float speed = 1.5f;
     private Rigidbody enemyRb;
     private GameObject player; 
     private Vector3 lookDirection;

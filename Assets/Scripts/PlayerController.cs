@@ -4,22 +4,60 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
-    public float speed = 5.0f;
-    private Rigidbody rb;
+    [SerializeField] private float speed = 5.0f;
+    [SerializeField] private float powerupStrength = 7.0f;
+    [SerializeField] private GameObject powerupIndicatior;
+
+    private bool hasPowerUp = false;
     private float forwardInput;
+    private Rigidbody playerRigidbody;
     private GameObject focalPoint;
 
-    // Start is called before the first frame update
+    private Vector3 indicatorOffset;
+
+
     void Start()
     {
-        rb = GetComponent<Rigidbody>();    
+        playerRigidbody = GetComponent<Rigidbody>();    
         focalPoint = GameObject.Find("Focal Point");
+        indicatorOffset = new Vector3(0, 0.5f, 0);
     }
 
-    // Update is called once per frame
     void Update()
     {
         forwardInput = Input.GetAxis("Vertical");
-        rb.AddForce(focalPoint.transform.forward * speed * forwardInput);
+        playerRigidbody.AddForce(focalPoint.transform.forward * speed * forwardInput);
+        powerupIndicatior.transform.position = transform.position - indicatorOffset;
+    }
+
+    void OnTriggerEnter(Collider other)
+    {
+        if(other.CompareTag("PowerUp"))
+        {
+            hasPowerUp = true;
+            powerupIndicatior.SetActive(true);
+            StartCoroutine(PowerupCountdownRoutine());
+            Destroy(other.gameObject);
+        }
+    }
+    
+    void OnCollisionEnter(Collision other)
+    {
+        if(other.gameObject.CompareTag("Enemy") && hasPowerUp)
+        {
+            Rigidbody enemyRigidbody = other.gameObject.GetComponent<Rigidbody>();
+            Vector3 awayFromPlayer = other.gameObject.transform.position - transform.position;
+
+            enemyRigidbody.AddForce(awayFromPlayer * powerupStrength, ForceMode.Impulse);
+            Debug.Log($"Collided with {other.gameObject.name} powerup {hasPowerUp}");
+        }
+    }
+
+
+    private IEnumerator PowerupCountdownRoutine ()
+    {
+        yield return new WaitForSeconds(4);
+        hasPowerUp = false;
+        powerupIndicatior.SetActive(false);
     }
 }
