@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class EnemyX : MonoBehaviour
 {
-    public float speed;
+    public float speed = 420.0f;
     private Rigidbody enemyRb;
     private GameObject playerGoal;
 
@@ -21,21 +21,15 @@ public class EnemyX : MonoBehaviour
         // Set enemy direction towards player goal and move there
         Vector3 lookDirection = (playerGoal.transform.position - transform.position).normalized;
         enemyRb.AddForce(lookDirection * speed * Time.deltaTime);
-
     }
 
     private void OnCollisionEnter(Collision other)
     {
         // If enemy collides with either goal, destroy it
-        if (other.gameObject.name == "Enemy Goal")
+        if (other.gameObject.name == "Enemy Goal" || other.gameObject.name == "Player Goal")
         {
             Destroy(gameObject);
         } 
-        else if (other.gameObject.name == "Player Goal")
-        {
-            Destroy(gameObject);
-        }
-
     }
 
 }
