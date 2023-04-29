@@ -9,11 +9,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1729945580980676, guid: 7bc251a7285632341a306c70a8f1cfbe, type: 3}
       propertyPath: m_Name
-      value: PowerUp
+      value: PowerUp Variant
       objectReference: {fileID: 0}
     - target: {fileID: 1729945580980676, guid: 7bc251a7285632341a306c70a8f1cfbe, type: 3}
       propertyPath: m_TagString
-      value: PowerUp
+      value: PowerUpBooster
       objectReference: {fileID: 0}
     - target: {fileID: 4172430691150986, guid: 7bc251a7285632341a306c70a8f1cfbe, type: 3}
       propertyPath: m_RootOrder
