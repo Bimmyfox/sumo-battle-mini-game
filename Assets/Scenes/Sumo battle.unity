@@ -669,7 +669,7 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2039412401}
   serializedVersion: 2
-  m_Mass: 1.5
+  m_Mass: 1
   m_Drag: 0
   m_AngularDrag: 0.05
   m_UseGravity: 1
@@ -768,6 +768,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speed: 30
+  jumpForce: 800
+  smashForce: 4
   powerupStrength: 7
   powerupIndicatior: {fileID: 563060667}
   bulletPrefab: {fileID: 7456567193560443037, guid: b2d191a0bff2b4465a6859510bbdb2ea, type: 3}
@@ -803,7 +805,7 @@ MonoBehaviour:
   enemyPrefabs:
   - {fileID: 4306797942242821652, guid: 93755b806e29b465c845b4ba025100bb, type: 3}
   - {fileID: 4306797942242821652, guid: 4d598d3c4232a49c2ac41059e21e9740, type: 3}
-  powerupPrefab: {fileID: 135134, guid: 680777ee05fd240c59d2454305f91cbe, type: 3}
+  powerupPrefab: {fileID: 192068, guid: 8b9c19abec3064377b7dd04ca776cb2c, type: 3}
 --- !u!4 &2131062217
 Transform:
   m_ObjectHideFlags: 0

@@ -8,6 +8,7 @@ TagManager:
   - Bullet
   - PowerUpBooster
   - ShootBooster
+  - SmashBooster
   layers:
   - Default
   - TransparentFX

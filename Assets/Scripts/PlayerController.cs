@@ -1,26 +1,34 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
     [SerializeField] private float speed = 30.0f;
+    [SerializeField] private float jumpForce = 200.0f;
+    [SerializeField] private float smashForce = 2f;
     [SerializeField] private float powerupStrength = 7.0f;
     [SerializeField] private GameObject powerupIndicatior;
     [SerializeField] private GameObject bulletPrefab;
 
+    
     private bool hasPowerUp = false;
+    private bool isJumping = false;
+    private bool spaceBarWasPressed = false;
+    private bool smashBoosterIsActive = false;
     private float forwardInput;
+    private Vector3 startPostion;
     private Rigidbody playerRigidbody;
     private GameObject focalPoint;
 
+    private Coroutine powerUpCoroutine;
+    private WaitForSeconds jumpDelay = new WaitForSeconds(0.3f);
+    private WaitForSeconds powerUpDelay = new WaitForSeconds(4.0f);
+
     private Vector3 indicatorOffset;
+
     private GameObject[] enemies;
     private Vector3 attackDirection;
     private GameObject bullet;
-
-    // private Vector3 startPostion;
-
 
     void Start()
     {
@@ -28,35 +36,41 @@ public class PlayerController : MonoBehaviour
         focalPoint = GameObject.Find("Focal Point");
         indicatorOffset = new Vector3(0, 0.5f, 0);
 
-        // startPostion = transform.position;
+        startPostion = transform.position;
+        StartCoroutine(SmashJumpRoutine());
+    }
+
+    void FixedUpdate()
+    {
+        MoveHorizontal();
+        IsSmashJumpReady();
     }
 
     void Update()
     {
-        DestroyIfOutOfBorders();
+        ReadMovementInputData();
+        MoveIfOutOfArena();
         MovePowerUpIndicator();
-    }
-
-    private void FixedUpdate()
-    {
-        MovePlayer();
     }
 
     void OnTriggerEnter(Collider other)
     {
         if(other.CompareTag("PowerUpBooster"))
-        {
-            hasPowerUp = true;
+        {   
             Destroy(other.gameObject);
-            powerupIndicatior.SetActive(true);
-            StartCoroutine(PowerupCountdownRoutine());
+            ActivatePowerUpBooster();
         }
 
         if(other.CompareTag("ShootBooster"))
         {
-            hasPowerUp = true;
             Destroy(other.gameObject);
-            Fire();
+            ActivateShootBooster();
+        }
+
+        if(other.CompareTag("SmashBooster"))
+        {
+            Destroy(other.gameObject);
+            ActivateSmashBooster();
         }
     }
     
@@ -71,27 +85,85 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    void DestroyIfOutOfBorders()
+    void OnDestroy()
     {
-        if(transform.position.y < -5.0f)
-        {
-            Destroy(gameObject);
-            // transform.position = startPostion;
-        }
+        StopAllCoroutines();
     }
 
-    void MovePowerUpIndicator()
-    {
-        powerupIndicatior.transform.position = transform.position - indicatorOffset;
-    }
-    
-    void MovePlayer()
+
+    private void ReadMovementInputData()
     {
         forwardInput = Input.GetAxis("Vertical");
+        spaceBarWasPressed = Input.GetKeyDown(KeyCode.Space);
+    }
+
+    private void MoveHorizontal()
+    {
         playerRigidbody.AddForce(focalPoint.transform.forward * speed * forwardInput);
     }
 
-    void Fire()
+    private void ActivatePowerUpBooster()
+    {
+        hasPowerUp = true;
+        powerupIndicatior.SetActive(true);
+
+        if(powerUpCoroutine != null)
+        {
+            StopCoroutine(powerUpCoroutine);
+        }
+        powerUpCoroutine = StartCoroutine(PowerUpCountdownRoutine());
+    }
+
+    private void ActivateShootBooster()
+    {
+        hasPowerUp = true;
+        Fire();
+        if(powerUpCoroutine != null)
+        {
+            StopCoroutine(powerUpCoroutine);
+        }
+        powerUpCoroutine = StartCoroutine(PowerUpCountdownRoutine());
+    }
+    
+    private void ActivateSmashBooster()
+    {
+        hasPowerUp = true;
+        smashBoosterIsActive = true;
+        powerupIndicatior.SetActive(true);
+        if(powerUpCoroutine != null)
+        {
+            StopCoroutine(powerUpCoroutine);
+        }
+        powerUpCoroutine = StartCoroutine(PowerUpCountdownRoutine());
+    }
+
+    private bool IsSmashJumpReady()
+    {
+        return spaceBarWasPressed && !isJumping && smashBoosterIsActive;
+    }
+
+    private IEnumerator SmashJumpRoutine()
+    {
+        while(true)
+        {
+            yield return new WaitUntil(() => IsSmashJumpReady());
+            isJumping = true;
+            playerRigidbody.AddForce(Vector3.up * jumpForce);
+            yield return jumpDelay;
+            playerRigidbody.AddForce(Vector3.down * jumpForce * smashForce);
+            isJumping = false;
+        }
+    }
+
+    private IEnumerator PowerUpCountdownRoutine()
+    {
+        yield return powerUpDelay;
+        hasPowerUp = false;
+        smashBoosterIsActive = false;
+        powerupIndicatior.SetActive(false);
+    }
+
+    private void Fire()
     {
         enemies = GameObject.FindGameObjectsWithTag("Enemy");   
         foreach(GameObject enemy in enemies)
@@ -102,10 +174,17 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    private IEnumerator PowerupCountdownRoutine ()
+    private void MoveIfOutOfArena()
     {
-        yield return new WaitForSeconds(4);
-        hasPowerUp = false;
-        powerupIndicatior.SetActive(false);
+        if(transform.position.y < -5.0f)
+        {
+            playerRigidbody.velocity = Vector3.zero;
+            transform.position = startPostion;
+        }
+    }
+
+    void MovePowerUpIndicator()
+    {
+        powerupIndicatior.transform.position = transform.position - indicatorOffset;
     }
 }
