@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 7985687168394092673}
   - component: {fileID: 7985687168394092672}
   - component: {fileID: 7985687168394092675}
-  - component: {fileID: 7985687168394092674}
+  - component: {fileID: -7957387414987159727}
   m_Layer: 0
   m_Name: BossEnemy
   m_TagString: Enemy
@@ -115,7 +115,7 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!114 &7985687168394092674
+--- !u!114 &-7957387414987159727
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -127,3 +127,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 00143994f803f4c30896001060b075b5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  speed: 1.5

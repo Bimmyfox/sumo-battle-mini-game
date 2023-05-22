@@ -2,10 +2,11 @@ using UnityEngine;
 
 public class LevelManager : MonoBehaviour
 {
+    [SerializeField] private int bossLevelNumber = 4;
     private PlayerController playerController;
-    private int levelNumber = 1;
-    private int bossLevelNumber = 2;
+    private int levelNumber = 0;
     private SpawnManager spawnManager;
+
 
     void Start()
     {
@@ -25,20 +26,19 @@ public class LevelManager : MonoBehaviour
         }
     }
 
-
     private void RestartLevel()
     {
         DestroyAllBoosters();
         DestroyAllEnemies();
-        SetUpEnemies();
         playerController.ResetPlayer();
+        SetUpEnemies();
     }
 
     private void NextLevel()
     {
         DestroyAllBoosters();
-        SetUpEnemies();
         levelNumber++;
+        SetUpEnemies();
     }
 
     private void SetUpEnemies()
@@ -46,6 +46,7 @@ public class LevelManager : MonoBehaviour
         if(levelNumber >= bossLevelNumber)
         {
             spawnManager.SpawnBossEnemy();
+            spawnManager.SpawnPowerupWave(levelNumber);
             return;
         }
         spawnManager.SpawnEnemyWave(levelNumber);
@@ -55,7 +56,7 @@ public class LevelManager : MonoBehaviour
     private void DestroyAllEnemies()
     {
         GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");  
-         foreach (GameObject enemy in enemies)
+        foreach (GameObject enemy in enemies)
         {
             Destroy(enemy);
         }  

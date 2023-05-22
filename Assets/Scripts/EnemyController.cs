@@ -11,7 +11,7 @@ public class EnemyController : MonoBehaviour
     private Vector3 lookDirection;
 
     
-    void Start()
+    protected void Start()
     {
         enemyRb = GetComponent<Rigidbody>();
         player = GameObject.Find("Player");
