@@ -1,39 +1,13 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class SpawnManager : MonoBehaviour
 {
     [SerializeField] private GameObject[] enemyPrefabs;
     [SerializeField] private GameObject[] powerupPrefabs;
-
-    private PlayerController playerController;
-    private int waveNumber = 1;
     private float spawnRange = 7f;
-    private int enemiesCount;
 
-    void Start()
-    {
-        playerController = FindObjectOfType<PlayerController>();
-    }
 
-    void Update()
-    {
-        if(playerController.IsPlayerOutOfArena())
-        {
-            RestartLevel();
-        }
-        else
-        {
-            enemiesCount = FindObjectsOfType<EnemyController>().Length;
-            if(enemiesCount < 1)
-            {
-                NextLevel();
-            }
-        }
-    }
-
-    private void SpawnEnemyWave(int enemiesToSpawn)
+    public void SpawnEnemyWave(int enemiesToSpawn)
     {
         int enemyTypeID;
         for(int i = 0; i < enemiesToSpawn; i++)
@@ -43,13 +17,13 @@ public class SpawnManager : MonoBehaviour
         }
     }
     
-    private void SpawnPowerupWave(int powerupsToSpawn)
+    public void SpawnPowerupWave(int powerupsToSpawn)
     {
-        int powerupIndex = 0;
+        int powerupTypeID = 0;
         for(int i = 0; i < powerupsToSpawn; i++)
         {
-            powerupIndex = Random.Range(0, powerupPrefabs.Length);
-            Instantiate(powerupPrefabs[powerupIndex], GenerateSpawnPosition(), powerupPrefabs[powerupIndex].transform.rotation);
+            powerupTypeID = Random.Range(0, powerupPrefabs.Length);
+            Instantiate(powerupPrefabs[powerupTypeID], GenerateSpawnPosition(), powerupPrefabs[powerupTypeID].transform.rotation);
         }
     }
     
@@ -58,53 +32,5 @@ public class SpawnManager : MonoBehaviour
         float positionX = Random.Range(-spawnRange, spawnRange);
         float positionZ = Random.Range(-spawnRange, spawnRange);
         return new Vector3(positionX, 0, positionZ);
-    }
-
-    private void RestartLevel()
-    {
-        DestroyAllBoosters();
-        DestroyAllEnemies();
-        SpawnEnemyWave(waveNumber);
-        SpawnPowerupWave(waveNumber);
-        playerController.ResetPlayer();
-    }
-
-    private void NextLevel()
-    {
-        DestroyAllBoosters();
-        SpawnEnemyWave(waveNumber);
-        SpawnPowerupWave(waveNumber);
-        waveNumber++;
-    }
-
-    private void DestroyAllEnemies()
-    {
-        GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");  
-         foreach (GameObject enemy in enemies)
-        {
-            Destroy(enemy);
-        }  
-    }
-
-    private void DestroyAllBoosters()
-    {
-        GameObject[] powerUpBoosters = GameObject.FindGameObjectsWithTag("PowerUpBooster");   
-        GameObject[] shootBoosters = GameObject.FindGameObjectsWithTag("ShootBooster");   
-        GameObject[] smashBoosters = GameObject.FindGameObjectsWithTag("SmashBooster");   
-       
-        foreach (GameObject booster in powerUpBoosters)
-        {
-            Destroy(booster);
-        } 
-        
-        foreach (GameObject booster in shootBoosters)
-        {
-            Destroy(booster);
-        } 
-        
-        foreach (GameObject booster in smashBoosters)
-        {
-            Destroy(booster);
-        }
     }
 }
