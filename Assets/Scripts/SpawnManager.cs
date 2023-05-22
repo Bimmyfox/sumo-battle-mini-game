@@ -5,7 +5,8 @@ using UnityEngine;
 public class SpawnManager : MonoBehaviour
 {
     [SerializeField] private GameObject[] enemyPrefabs;
-    [SerializeField] private GameObject powerupPrefab;
+    [SerializeField] private GameObject[] powerupPrefabs;
+
     private PlayerController playerController;
     private int waveNumber = 1;
     private float spawnRange = 7f;
@@ -44,9 +45,11 @@ public class SpawnManager : MonoBehaviour
     
     private void SpawnPowerupWave(int powerupsToSpawn)
     {
+        int powerupIndex = 0;
         for(int i = 0; i < powerupsToSpawn; i++)
         {
-            Instantiate(powerupPrefab, GenerateSpawnPosition(), powerupPrefab.transform.rotation);
+            powerupIndex = Random.Range(0, powerupPrefabs.Length);
+            Instantiate(powerupPrefabs[powerupIndex], GenerateSpawnPosition(), powerupPrefabs[powerupIndex].transform.rotation);
         }
     }
     

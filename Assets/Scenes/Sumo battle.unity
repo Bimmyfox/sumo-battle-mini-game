@@ -807,7 +807,10 @@ MonoBehaviour:
   enemyPrefabs:
   - {fileID: 4306797942242821652, guid: 93755b806e29b465c845b4ba025100bb, type: 3}
   - {fileID: 4306797942242821652, guid: 4d598d3c4232a49c2ac41059e21e9740, type: 3}
-  powerupPrefab: {fileID: 192068, guid: 8b9c19abec3064377b7dd04ca776cb2c, type: 3}
+  powerupPrefabs:
+  - {fileID: 7036313319136021123, guid: 09691cb6b4ff14ced8704a6a65731306, type: 3}
+  - {fileID: 135134, guid: 680777ee05fd240c59d2454305f91cbe, type: 3}
+  - {fileID: 192068, guid: 8b9c19abec3064377b7dd04ca776cb2c, type: 3}
 --- !u!4 &2131062217
 Transform:
   m_ObjectHideFlags: 0
