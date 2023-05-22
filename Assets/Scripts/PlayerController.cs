@@ -4,37 +4,36 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour
 {
     [SerializeField] private float speed = 30.0f;
-    [SerializeField] private float jumpForce = 200.0f;
-    [SerializeField] private float smashForce = 2f;
-    [SerializeField] private float powerupStrength = 7.0f;
-    [SerializeField] private GameObject powerupIndicatior;
-    [SerializeField] private GameObject bulletPrefab;
+    [SerializeField] private float jumpForce = 2000.0f;
 
+    //===Boosters===
+    [SerializeField] private GameObject powerupIndicator;
+    [SerializeField] private float powerupStrength = 7.0f;
+    [SerializeField] private GameObject bulletPrefab;
+    [SerializeField] private float smashMultiplier = 2f;
+    [SerializeField] private float smashExplosionForce = 105;
+    [SerializeField] private float smashExplosionRadius = 20;
+    //===Boosters===
     
-    private bool hasPowerUp = false;
-    private bool isJumping = false;
-    private bool spaceBarWasPressed = false;
-    private bool smashBoosterIsActive = false;
+
     private float forwardInput;
     private Vector3 startPostion;
     private Rigidbody playerRigidbody;
     private GameObject focalPoint;
-
+    private Vector3 powerupIndicatorOffset;
+    private bool hasPowerUp = false;
+    private bool isJumping = false;
+    private bool smashBoosterIsActive = false;
     private Coroutine powerUpCoroutine;
-    private WaitForSeconds jumpDelay = new WaitForSeconds(0.3f);
     private WaitForSeconds powerUpDelay = new WaitForSeconds(4.0f);
+    private WaitForSeconds jumpDelay = new WaitForSeconds(0.3f);
 
-    private Vector3 indicatorOffset;
-
-    private GameObject[] enemies;
-    private Vector3 attackDirection;
-    private GameObject bullet;
 
     void Start()
     {
         playerRigidbody = GetComponent<Rigidbody>();    
         focalPoint = GameObject.Find("Focal Point");
-        indicatorOffset = new Vector3(0, 0.5f, 0);
+        powerupIndicatorOffset = new Vector3(0, 0.5f, 0);
 
         startPostion = transform.position;
         StartCoroutine(SmashJumpRoutine());
@@ -49,28 +48,28 @@ public class PlayerController : MonoBehaviour
     void Update()
     {
         ReadMovementInputData();
-        MoveIfOutOfArena();
         MovePowerUpIndicator();
     }
+
 
     void OnTriggerEnter(Collider other)
     {
         if(other.CompareTag("PowerUpBooster"))
         {   
-            Destroy(other.gameObject);
             ActivatePowerUpBooster();
+            Destroy(other.gameObject);
         }
 
         if(other.CompareTag("ShootBooster"))
         {
-            Destroy(other.gameObject);
             ActivateShootBooster();
+            Destroy(other.gameObject);
         }
 
         if(other.CompareTag("SmashBooster"))
         {
-            Destroy(other.gameObject);
             ActivateSmashBooster();
+            Destroy(other.gameObject);
         }
     }
     
@@ -91,10 +90,29 @@ public class PlayerController : MonoBehaviour
     }
 
 
+    public bool IsPlayerOutOfArena()
+    {
+        return transform.position.y < -5.0f;
+    }
+
+    public void ResetPlayer()
+    {
+        playerRigidbody.velocity = Vector3.zero;
+        transform.position = startPostion;
+        hasPowerUp = false;
+        isJumping = false;
+        smashBoosterIsActive = false;
+        powerupIndicator.SetActive(false);
+        if(powerUpCoroutine != null)
+        {
+            StopCoroutine(powerUpCoroutine);
+        }
+    }
+
+
     private void ReadMovementInputData()
     {
         forwardInput = Input.GetAxis("Vertical");
-        spaceBarWasPressed = Input.GetKeyDown(KeyCode.Space);
     }
 
     private void MoveHorizontal()
@@ -102,34 +120,13 @@ public class PlayerController : MonoBehaviour
         playerRigidbody.AddForce(focalPoint.transform.forward * speed * forwardInput);
     }
 
-    private void ActivatePowerUpBooster()
-    {
-        hasPowerUp = true;
-        powerupIndicatior.SetActive(true);
 
-        if(powerUpCoroutine != null)
-        {
-            StopCoroutine(powerUpCoroutine);
-        }
-        powerUpCoroutine = StartCoroutine(PowerUpCountdownRoutine());
-    }
-
-    private void ActivateShootBooster()
-    {
-        hasPowerUp = true;
-        Fire();
-        if(powerUpCoroutine != null)
-        {
-            StopCoroutine(powerUpCoroutine);
-        }
-        powerUpCoroutine = StartCoroutine(PowerUpCountdownRoutine());
-    }
-    
+    #region SmashBooster
     private void ActivateSmashBooster()
     {
         hasPowerUp = true;
         smashBoosterIsActive = true;
-        powerupIndicatior.SetActive(true);
+        powerupIndicator.SetActive(true);
         if(powerUpCoroutine != null)
         {
             StopCoroutine(powerUpCoroutine);
@@ -139,7 +136,7 @@ public class PlayerController : MonoBehaviour
 
     private bool IsSmashJumpReady()
     {
-        return spaceBarWasPressed && !isJumping && smashBoosterIsActive;
+        return Input.GetKeyDown(KeyCode.Space) && !isJumping && smashBoosterIsActive;
     }
 
     private IEnumerator SmashJumpRoutine()
@@ -150,22 +147,44 @@ public class PlayerController : MonoBehaviour
             isJumping = true;
             playerRigidbody.AddForce(Vector3.up * jumpForce);
             yield return jumpDelay;
-            playerRigidbody.AddForce(Vector3.down * jumpForce * smashForce);
+            playerRigidbody.AddForce(Vector3.down * jumpForce * smashMultiplier);
             isJumping = false;
+            SmashBoosterAttackEmenies();
         }
     }
 
-    private IEnumerator PowerUpCountdownRoutine()
+    private void SmashBoosterAttackEmenies()
     {
-        yield return powerUpDelay;
-        hasPowerUp = false;
-        smashBoosterIsActive = false;
-        powerupIndicatior.SetActive(false);
+        var enemies = GameObject.FindGameObjectsWithTag("Enemy");   
+        Vector3 playerPosition = GameObject.FindGameObjectWithTag("Player").transform.position;
+        
+        foreach(GameObject enemy in enemies)
+        {
+            enemy.GetComponent<Rigidbody>().AddExplosionForce(smashExplosionForce, playerPosition, smashExplosionRadius, 0.0f, ForceMode.Impulse);
+        }
     }
+    #endregion
 
-    private void Fire()
+
+    #region ShootBooster
+    private void ActivateShootBooster()
     {
-        enemies = GameObject.FindGameObjectsWithTag("Enemy");   
+        hasPowerUp = true;
+        ShootBoosterFire();
+
+        if(powerUpCoroutine != null)
+        {
+            StopCoroutine(powerUpCoroutine);
+        }
+        powerUpCoroutine = StartCoroutine(PowerUpCountdownRoutine());
+    }
+    
+    private void ShootBoosterFire()
+    {
+        var enemies = GameObject.FindGameObjectsWithTag("Enemy");   
+        GameObject bullet;
+        Vector3 attackDirection;
+
         foreach(GameObject enemy in enemies)
         {
             bullet = Instantiate(bulletPrefab, transform.position, transform.rotation);
@@ -173,18 +192,36 @@ public class PlayerController : MonoBehaviour
             bullet.GetComponent<BulletController>().EnemyPosition = attackDirection;
         }
     }
+    #endregion
 
-    private void MoveIfOutOfArena()
+
+    #region PowerUpBooster
+    private void ActivatePowerUpBooster()
     {
-        if(transform.position.y < -5.0f)
+        hasPowerUp = true;
+        powerupIndicator.SetActive(true);
+
+        if(powerUpCoroutine != null)
         {
-            playerRigidbody.velocity = Vector3.zero;
-            transform.position = startPostion;
+            StopCoroutine(powerUpCoroutine);
         }
+        powerUpCoroutine = StartCoroutine(PowerUpCountdownRoutine());
     }
 
-    void MovePowerUpIndicator()
+
+    private IEnumerator PowerUpCountdownRoutine()
     {
-        powerupIndicatior.transform.position = transform.position - indicatorOffset;
+        yield return powerUpDelay;
+        hasPowerUp = false;
+        smashBoosterIsActive = false;
+        powerupIndicator.SetActive(false);
+        
+    }
+    #endregion
+
+
+    private void MovePowerUpIndicator()
+    {
+       powerupIndicator.transform.position = transform.position - powerupIndicatorOffset;
     }
 }

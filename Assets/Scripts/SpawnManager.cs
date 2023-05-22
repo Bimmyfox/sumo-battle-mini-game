@@ -6,19 +6,29 @@ public class SpawnManager : MonoBehaviour
 {
     [SerializeField] private GameObject[] enemyPrefabs;
     [SerializeField] private GameObject powerupPrefab;
+    private PlayerController playerController;
     private int waveNumber = 1;
     private float spawnRange = 7f;
-    private int enemyCount;
+    private int enemiesCount;
 
+    void Start()
+    {
+        playerController = FindObjectOfType<PlayerController>();
+    }
 
     void Update()
     {
-        enemyCount = FindObjectsOfType<EnemyController>().Length;
-        if(enemyCount < 1)
+        if(playerController.IsPlayerOutOfArena())
         {
-            SpawnEnemyWave(waveNumber);
-            SpawnPowerupWave(waveNumber);
-            waveNumber++;
+            RestartLevel();
+        }
+        else
+        {
+            enemiesCount = FindObjectsOfType<EnemyController>().Length;
+            if(enemiesCount < 1)
+            {
+                NextLevel();
+            }
         }
     }
 
@@ -45,5 +55,53 @@ public class SpawnManager : MonoBehaviour
         float positionX = Random.Range(-spawnRange, spawnRange);
         float positionZ = Random.Range(-spawnRange, spawnRange);
         return new Vector3(positionX, 0, positionZ);
+    }
+
+    private void RestartLevel()
+    {
+        DestroyAllBoosters();
+        DestroyAllEnemies();
+        SpawnEnemyWave(waveNumber);
+        SpawnPowerupWave(waveNumber);
+        playerController.ResetPlayer();
+    }
+
+    private void NextLevel()
+    {
+        DestroyAllBoosters();
+        SpawnEnemyWave(waveNumber);
+        SpawnPowerupWave(waveNumber);
+        waveNumber++;
+    }
+
+    private void DestroyAllEnemies()
+    {
+        GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");  
+         foreach (GameObject enemy in enemies)
+        {
+            Destroy(enemy);
+        }  
+    }
+
+    private void DestroyAllBoosters()
+    {
+        GameObject[] powerUpBoosters = GameObject.FindGameObjectsWithTag("PowerUpBooster");   
+        GameObject[] shootBoosters = GameObject.FindGameObjectsWithTag("ShootBooster");   
+        GameObject[] smashBoosters = GameObject.FindGameObjectsWithTag("SmashBooster");   
+       
+        foreach (GameObject booster in powerUpBoosters)
+        {
+            Destroy(booster);
+        } 
+        
+        foreach (GameObject booster in shootBoosters)
+        {
+            Destroy(booster);
+        } 
+        
+        foreach (GameObject booster in smashBoosters)
+        {
+            Destroy(booster);
+        }
     }
 }

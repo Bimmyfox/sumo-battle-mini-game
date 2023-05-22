@@ -656,7 +656,7 @@ GameObject:
   - component: {fileID: 2039412407}
   m_Layer: 0
   m_Name: Player
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -768,11 +768,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speed: 30
-  jumpForce: 800
-  smashForce: 4
+  jumpForce: 2000
+  powerupIndicator: {fileID: 563060667}
   powerupStrength: 7
-  powerupIndicatior: {fileID: 563060667}
   bulletPrefab: {fileID: 7456567193560443037, guid: b2d191a0bff2b4465a6859510bbdb2ea, type: 3}
+  smashMultiplier: 2
+  smashExplosionForce: 100
+  smashExplosionRadius: 20
 --- !u!1 &2131062215
 GameObject:
   m_ObjectHideFlags: 0
