@@ -46,7 +46,7 @@ public class LevelManager : MonoBehaviour
         if(levelNumber >= bossLevelNumber)
         {
             spawnManager.SpawnBossEnemy();
-            spawnManager.SpawnPowerupWave(levelNumber);
+            spawnManager.SpawnPowerupWave(bossLevelNumber);
             return;
         }
         spawnManager.SpawnEnemyWave(levelNumber);

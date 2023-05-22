@@ -285,8 +285,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 68e523a15524e4c2baf2edc06531962c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  bossLevelNumber: 2
-  levelNumber: 0
+  bossLevelNumber: 4
 --- !u!4 &739270439
 Transform:
   m_ObjectHideFlags: 0
