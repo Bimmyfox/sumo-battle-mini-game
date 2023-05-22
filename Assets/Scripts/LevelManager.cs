@@ -4,8 +4,7 @@ public class LevelManager : MonoBehaviour
 {
     private PlayerController playerController;
     private int levelNumber = 1;
-
-
+    private int bossLevelNumber = 2;
     private SpawnManager spawnManager;
 
     void Start()
@@ -20,7 +19,7 @@ public class LevelManager : MonoBehaviour
         {
             RestartLevel();
         }
-        else if(FindObjectsOfType<EnemyController>().Length < 1)
+        else if(GameObject.FindGameObjectsWithTag("Enemy").Length < 1)
         {
             NextLevel();
         }
@@ -31,17 +30,26 @@ public class LevelManager : MonoBehaviour
     {
         DestroyAllBoosters();
         DestroyAllEnemies();
-        spawnManager.SpawnEnemyWave(levelNumber);
-        spawnManager.SpawnPowerupWave(levelNumber);
+        SetUpEnemies();
         playerController.ResetPlayer();
     }
 
     private void NextLevel()
     {
         DestroyAllBoosters();
+        SetUpEnemies();
+        levelNumber++;
+    }
+
+    private void SetUpEnemies()
+    {
+        if(levelNumber >= bossLevelNumber)
+        {
+            spawnManager.SpawnBossEnemy();
+            return;
+        }
         spawnManager.SpawnEnemyWave(levelNumber);
         spawnManager.SpawnPowerupWave(levelNumber);
-        levelNumber++;
     }
 
     private void DestroyAllEnemies()
@@ -53,6 +61,7 @@ public class LevelManager : MonoBehaviour
         }  
     }
 
+    //TODO: refactor using object pool pattern
     private void DestroyAllBoosters()
     {
         GameObject[] powerUpBoosters = GameObject.FindGameObjectsWithTag("PowerUpBooster");   

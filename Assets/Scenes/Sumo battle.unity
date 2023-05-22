@@ -848,6 +848,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a45a78efd9c864e6a9231d52a07802e1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  bossEnemyPrefab: {fileID: 7985687168394092677, guid: fcca88927d0164a53ae4968244da18e3, type: 3}
   enemyPrefabs:
   - {fileID: 4306797942242821652, guid: 93755b806e29b465c845b4ba025100bb, type: 3}
   - {fileID: 4306797942242821652, guid: 4d598d3c4232a49c2ac41059e21e9740, type: 3}

@@ -2,6 +2,7 @@ using UnityEngine;
 
 public class SpawnManager : MonoBehaviour
 {
+    [SerializeField] private GameObject bossEnemyPrefab;
     [SerializeField] private GameObject[] enemyPrefabs;
     [SerializeField] private GameObject[] powerupPrefabs;
     private float spawnRange = 7f;
@@ -25,6 +26,11 @@ public class SpawnManager : MonoBehaviour
             powerupTypeID = Random.Range(0, powerupPrefabs.Length);
             Instantiate(powerupPrefabs[powerupTypeID], GenerateSpawnPosition(), powerupPrefabs[powerupTypeID].transform.rotation);
         }
+    }
+
+    public void SpawnBossEnemy()
+    {
+        Instantiate(bossEnemyPrefab, GenerateSpawnPosition(), bossEnemyPrefab.transform.rotation);
     }
     
     private Vector3 GenerateSpawnPosition()
